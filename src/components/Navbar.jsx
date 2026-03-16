@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FiSearch, FiMenu, FiX, FiUser } from "react-icons/fi";
 import { HiOutlineCube } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  const { user, logout } = useContext(AuthContext);
 
   const menus = [
     { name: "Home", path: "/" },
@@ -45,20 +48,31 @@ export default function Navbar() {
         {/* Auth Buttons */}
         <div className="hidden md:flex items-center gap-4 ml-6">
 
-          <Link
-            to="/login"
-            className="flex items-center gap-1 text-gray-700 hover:text-black transition"
-          >
-            <FiUser />
-            Login
-          </Link>
+          {!user ? (
+            <>
+              <Link
+                to="/login"
+                className="flex items-center gap-1 text-gray-700 hover:text-black transition"
+              >
+                <FiUser />
+                Login
+              </Link>
 
-          <Link
-            to="/signup"
-            className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 transition"
-          >
-            Sign Up
-          </Link>
+              <Link
+                to="/signup"
+                className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <button
+              onClick={logout}
+              className="bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+            >
+              Logout
+            </button>
+          )}
 
         </div>
 
@@ -96,19 +110,30 @@ export default function Navbar() {
           {/* Mobile Auth */}
           <div className="flex flex-col gap-3">
 
-            <Link
-              to="/login"
-              className="border text-center py-2 rounded-full text-gray-700"
-            >
-              Login
-            </Link>
+            {!user ? (
+              <>
+                <Link
+                  to="/login"
+                  className="border text-center py-2 rounded-full text-gray-700"
+                >
+                  Login
+                </Link>
 
-            <Link
-              to="/signup"
-              className="bg-black text-white text-center py-2 rounded-full"
-            >
-              Sign Up
-            </Link>
+                <Link
+                  to="/signup"
+                  className="bg-black text-white text-center py-2 rounded-full"
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <button
+                onClick={logout}
+                className="bg-black text-white py-2 rounded-full"
+              >
+                Logout
+              </button>
+            )}
 
           </div>
 

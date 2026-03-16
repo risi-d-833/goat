@@ -1,8 +1,44 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
+import axios from "../api/axios";
 
 export default function Signup() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+    setError("");
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.post("/auth/signup", form);
+      alert(res.data.message);
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+      alert(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6">
 
@@ -16,40 +52,51 @@ export default function Signup() {
           Sign up to get started
         </p>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSignup}>
 
-          {/* Name */}
           <div className="flex items-center border rounded-lg px-3 py-2">
-            <FiUser className="text-gray-400 mr-2" />
+            <FiUser className="text-gray-400 mr-2"/>
             <input
               type="text"
+              name="name"
               placeholder="Full Name"
               className="w-full outline-none"
+              onChange={handleChange}
+              disabled={loading}
             />
           </div>
 
-          {/* Email */}
           <div className="flex items-center border rounded-lg px-3 py-2">
-            <FiMail className="text-gray-400 mr-2" />
+            <FiMail className="text-gray-400 mr-2"/>
             <input
               type="email"
+              name="email"
               placeholder="Email"
               className="w-full outline-none"
+              onChange={handleChange}
+              disabled={loading}
             />
           </div>
 
-          {/* Password */}
           <div className="flex items-center border rounded-lg px-3 py-2">
-            <FiLock className="text-gray-400 mr-2" />
+            <FiLock className="text-gray-400 mr-2"/>
             <input
               type="password"
+              name="password"
               placeholder="Password"
               className="w-full outline-none"
+              onChange={handleChange}
+              disabled={loading}
             />
           </div>
 
-          <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">
-            Create Account
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          <button 
+            className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? "Creating..." : "Create Account"}
           </button>
 
         </form>
@@ -62,7 +109,6 @@ export default function Signup() {
         </p>
 
       </div>
-
     </div>
   );
 }
